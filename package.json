@@ -1,0 +1,25 @@
+{
+  "name": "webby",
+  "version": "1.0.0",
+  "description": "backend app for webby food app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cloudinary": "^2.5.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-fileupload": "^1.5.1",
+    "mongoose": "^8.9.2",
+    "multer": "^1.4.5-lts.1",
+    "ngrok": "^5.0.0-beta.2",
+    "nodemailer": "^6.9.16",
+    "otp-generator": "^4.0.1"
+  }
+}

@@ -25,7 +25,6 @@ class UserController {
         email: user.email,
         otp: user.otp,
       });
-      console.log(checkOtp);
       if (!checkOtp) {
         res.send({ status: false, message: "OTP is invalid" });
         return;
@@ -55,7 +54,7 @@ class UserController {
     const { email, password } = req.query;
     const isMatch = await authController.verifyPassword(password,email);
     if(!isMatch){
-        res.send({status:false,message:"Password is incorrect"});
+        res.send({status:false,message:"Invalid password or email"});
         return;
     }else{
         const user = await UserModel.findOne({ email});

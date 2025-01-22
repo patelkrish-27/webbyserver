@@ -5,7 +5,7 @@ const fs = require('fs');
 class RestaurantController {
     async getAllRestaurants(req, res) {
         try {
-            const restaurants = await RestaurantModel.find({});
+            const restaurants = await RestaurantModel.find({}).limit(10);
             res.status(200).json(restaurants);
         } catch (error) {
             res.status(500).json({ error: error.message });

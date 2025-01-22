@@ -6,7 +6,7 @@ const fileUpload = require('express-fileupload');
 
 router.use(fileUpload());
 
-router.get('/', restaurantController.getAllRestaurants);
+router.get('/get', restaurantController.getAllRestaurants);
 router.post('/add', restaurantController.addRestaurant);
 
 module.exports = router;

@@ -8,5 +8,6 @@ router.use(fileUpload());
 
 router.get('/get', restaurantController.getAllRestaurants);
 router.post('/add', restaurantController.addRestaurant);
+router.post('/getOne', restaurantController.getOneRestaurant);
 
 module.exports = router;

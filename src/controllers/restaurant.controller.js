@@ -11,6 +11,30 @@ class RestaurantController {
             res.status(500).json({ error: error.message });
         }
     }
+    async  getOneRestaurant(req, res) {
+        try {
+            const { id } = req.body;  // Assume id is sent in the request body (you can adjust to use query params if needed)
+            
+            // Check if an id is provided
+            if (!id) {
+                return res.status(400).json({ error: 'Restaurant ID is required' });
+            }
+    
+            // Query the restaurant by its ID
+            const restaurant = await RestaurantModel.findById(id);
+            
+            // If the restaurant is not found, return a 404 response
+            if (!restaurant) {
+                return res.status(404).json({ error: 'Restaurant not found' });
+            }
+    
+            // Return the found restaurant in the response
+            res.status(200).json(restaurant);
+        } catch (error) {
+            // Handle any errors (e.g., invalid ID format, server errors)
+            res.status(500).json({ error: error.message });
+        }
+    }
 
     async addRestaurant(req, res) {
         try {

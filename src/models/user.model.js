@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     name: String,
@@ -9,15 +8,3 @@ const userSchema = new mongoose.Schema({
 const UserModel = mongoose.model("user", userSchema);
 module.exports = UserModel;
 
-=======
-const mongoose = require("mongoose");
-const userSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    idToken: String,
-    photoUrl: String,
-});
-const UserModel = mongoose.model("user", userSchema);
-module.exports = UserModel;
-
->>>>>>> master

@@ -43,8 +43,7 @@ class UserController {
   }
   async loginUser(req, res) {
     const { email, idToken } = req.query;
-    console.log("idToken",idToken)
-    const user = await UserModel.findOne({idToken} );
+    const user = await UserModel.findOne({email} );
     console.log("email",user)
     if (!user) {
       res.send({ status: false, message: "User not found" });

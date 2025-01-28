@@ -8,6 +8,6 @@ router.use(fileUpload());
 
 router.get('/get/:pages', restaurantController.getAllRestaurants);
 router.post('/add', restaurantController.addRestaurant);
-router.post('/getOne', restaurantController.getOneRestaurant);
+router.get('/getOne/:_id', restaurantController.getOneRestaurant);
 
 module.exports = router;

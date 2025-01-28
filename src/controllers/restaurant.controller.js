@@ -66,6 +66,26 @@ class RestaurantController {
             res.status(500).json({ error: error.message });
         }
     }
+    async getRestaurantByTerm(req, res) {
+        const restaurants = await RestaurantModel.find({});
+        const term = (req.query.term || "").toLowerCase().trim();
+        console.log("Search term received on server:", term);
+      
+        if (!term) {
+          return res.status(400).json({ error: "Search term is required" });
+        }
+      
+        // Filter restaurants by name
+        const filtered = restaurants.filter((restaurant) => {
+          if (restaurant.name && typeof restaurant.name === "string") {
+            return restaurant.name.toLowerCase().includes(term);
+          }
+          console.warn("Skipping invalid item:", restaurant);
+          return false;
+        });
+      
+        res.json({ results: filtered });
+    }
 }
 
 module.exports = new RestaurantController();

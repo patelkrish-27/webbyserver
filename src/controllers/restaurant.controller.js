@@ -4,8 +4,10 @@ const path = require('path');
 const fs = require('fs');
 class RestaurantController {
     async getAllRestaurants(req, res) {
+        const page = req.params.pages;
+        
         try {
-            const restaurants = await RestaurantModel.find({}).limit(10);
+            const restaurants = await RestaurantModel.find({}).skip((page-1)*10).limit(10);
             res.status(200).json(restaurants);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -67,3 +69,5 @@ class RestaurantController {
 }
 
 module.exports = new RestaurantController();
+
+

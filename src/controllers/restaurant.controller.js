@@ -86,8 +86,25 @@ class RestaurantController {
       
         res.json({ results: filtered });
     }
+    // 5 random restaurants
+    async getRandomRestaurants(req, res) {
+        try {
+          const randomRestaurants = await RestaurantModel.aggregate([
+            { $sample: { size: 5 } },
+          ]);
+    
+          if (!randomRestaurants || randomRestaurants.length === 0) {
+            return res.status(404).json({ error: "No restaurants found" });
+          }
+    
+          res.status(200).json({ results: randomRestaurants });
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      }
 }
 
 module.exports = new RestaurantController();
 
 
+    

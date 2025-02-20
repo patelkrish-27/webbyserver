@@ -10,5 +10,6 @@ router.get('/get/:pages', restaurantController.getAllRestaurants);
 router.post('/add', restaurantController.addRestaurant);
 router.get('/getOne/:_id', restaurantController.getOneRestaurant);
 router.get('/search', restaurantController.getRestaurantByTerm);
+router.get("/random", restaurantController.getRandomRestaurants);
 
 module.exports = router;

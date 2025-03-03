@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { connectMongoDb } = require('./src/config/database');
 const restaurantRouter = require('./src/routes/restaurant.routes');
+const homepageRouter = require('./src/routes/homepage.routes');
 const userRouter = require('./src/routes/user.routes');
 const authRouter = require('./src/routes/auth.routes');
 const app = express();
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/api/restaurants', restaurantRouter);
+app.use('/api/homepage', homepageRouter);
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
 // Database connection

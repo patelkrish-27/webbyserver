@@ -5,9 +5,9 @@ const fs = require('fs');
 class RestaurantController {
     async getAllRestaurants(req, res) {
         const page = req.params.pages;
-        
         try {
             const restaurants = await RestaurantModel.find({}).skip((page-1)*10).limit(10);
+            console.log(restaurants[0].image);
             res.status(200).json(restaurants);
         } catch (error) {
             res.status(500).json({ error: error.message });

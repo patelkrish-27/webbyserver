@@ -8,4 +8,5 @@ router.post("/registerbyemail", userController.registerUserByEmail);
 router.get("/login", userController.loginUser);
 router.get("/loginbyemail", userController.loginUserByEmail);
 router.post("/send-otp", authController.sendOtp);
+router.post("/getuser",userController.getUser);
 module.exports = router;

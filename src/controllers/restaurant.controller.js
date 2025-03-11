@@ -6,7 +6,7 @@ class RestaurantController {
     async getAllRestaurants(req, res) {
         const page = req.params.pages;
         try {
-            const restaurants = await RestaurantModel.find({}).skip((page-1)*10).limit(10);
+            const restaurants = await RestaurantModel.find({}).skip((page-1)*100).limit(100);
             console.log(restaurants[0].image);
             res.status(200).json(restaurants);
         } catch (error) {
@@ -77,8 +77,8 @@ class RestaurantController {
       
         // Filter restaurants by name
         const filtered = restaurants.filter((restaurant) => {
-          if (restaurant.name && typeof restaurant.name === "string") {
-            return restaurant.name.toLowerCase().includes(term);
+          if (restaurant.restaurantName && typeof restaurant.restaurantName === "string") {
+            return restaurant.restaurantName.toLowerCase().includes(term);
           }
           console.warn("Skipping invalid item:", restaurant);
           return false;

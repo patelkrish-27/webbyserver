@@ -8,6 +8,8 @@ const restaurantRouter = require('./src/routes/restaurant.routes');
 const homepageRouter = require('./src/routes/homepage.routes');
 const userRouter = require('./src/routes/user.routes');
 const authRouter = require('./src/routes/auth.routes');
+const bookingRoutes = require('./src/routes/bookings.routes');
+const menuRoutes = require('./src/routes/menu.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -22,6 +24,8 @@ app.use('/api/restaurants', restaurantRouter);
 app.use('/api/homepage', homepageRouter);
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/',bookingRoutes);
+app.use('/api/menu', menuRoutes);
 // Database connection
 connectMongoDb();
 

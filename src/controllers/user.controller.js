@@ -62,6 +62,16 @@ class UserController {
         res.status(201).json({user});
     }
   }
+
+  async getUser(req, res) {
+    const { email } = req.body;
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      res.send({ status: false, message: "User not found" });
+    } else {
+      res.status(201).json({ status: true, message: "User found",user });
+    }
+  }
 }
 
 module.exports = new UserController();

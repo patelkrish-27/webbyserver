@@ -25,7 +25,7 @@ const menuItemSchema = new mongoose.Schema({
 
 const menuSchema = new mongoose.Schema({
     restaurant_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Restaurant'
     },

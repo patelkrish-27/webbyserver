@@ -3,6 +3,7 @@ const mailSender = require("../utils/mailSender");
 const bcrypt = require("bcrypt");
 const AuthModel = require("../models/auth.model");
 const UserModel = require("../models/user.model");
+
 class AuthController {
   async sendOtp(req, res) {
     const { email } = req.body;
@@ -111,8 +112,10 @@ class AuthController {
         res.send({status:false,message:"Got an error while sending otp"});
     }else{
       res.status(200).json({ status: true, message: "OTP sent" });
+      console.log(info);
     }
   }
+
   async hashPassword(password) {
     try {
       const salt = await bcrypt.genSalt(10);
@@ -122,15 +125,25 @@ class AuthController {
       throw error;
     }
   }
-  async verifyPassword(password,email) {
-    const user = await UserModel.findOne({email});
-    if(!user){
+
+  async verifyPassword(password, email) {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
       return false;
+    } else {
+      const isMatch = await bcrypt.compare(password, user.idToken);
+      return isMatch;
     }
-    else{
-    const isMatch = await bcrypt.compare(password,user.idToken);
-    return isMatch;
+  }
+
+  async verifyOtp(req, res) {
+    const { email, otp } = req.body;
+    const checkOtp = await AuthModel.findOne({ email, otp });
+    if (!checkOtp) {
+      res.send({ status: false, message: "OTP is invalid" });
+      return;
     }
+    res.send({ status: true, message: "OTP is valid" });
   }
 }
 

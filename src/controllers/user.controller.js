@@ -9,7 +9,18 @@ class UserController {
     if (checkUser) {
       res.send({ status: false, message: "User already exists" });
     } else {
-      const newUser = await UserModel.create(user);
+      const newUser = await UserModel.create({
+        name: user.name,
+        email: user.email,
+        idToken:user.idToken,
+        photoUrl: user.photoUrl,
+        address:user.address,
+        phoneNumber:user.phoneNumber,
+        location:{
+          latitude: user.location.latitude,
+          longitude: user.location.longitude
+        }
+      });
       res.status(201).json({user:newUser});
     }
   }
@@ -20,15 +31,6 @@ class UserController {
     if (checkUser) {
       res.send({ status: false, message: "User already exists" });
     } else {
-      // verify otp
-      const checkOtp = await AuthModel.findOne({
-        email: user.email,
-        otp: user.otp,
-      });
-      if (!checkOtp) {
-        res.send({ status: false, message: "OTP is invalid" });
-        return;
-      } else {
         const idToken = await authController.hashPassword(user.password);
         console.log(idToken);
         const newUser = await UserModel.create({
@@ -36,11 +38,16 @@ class UserController {
           email: user.email,
           idToken,
           photoUrl: user.photoUrl,
+          address:user.address,
+          phoneNumber:user.phoneNumber,
+          location:{
+            latitude: user.location.latitude,
+            longitude: user.location.longitude
+          }
         });
         res.status(201).json({user:newUser});
       }
     }
-  }
   async loginUser(req, res) {
     const { email, idToken } = req.query;
     const user = await UserModel.findOne({email} );
@@ -64,8 +71,8 @@ class UserController {
   }
 
   async getUser(req, res) {
-    const { email } = req.body;
-    const user = await UserModel.findOne({ email });
+    const { _id } = req.body;
+    const user = await UserModel.findOne({ _id });
     if (!user) {
       res.send({ status: false, message: "User not found" });
     } else {

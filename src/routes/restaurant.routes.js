@@ -11,5 +11,7 @@ router.post('/add', restaurantController.addRestaurant);
 router.get('/getOne/:_id', restaurantController.getOneRestaurant);
 router.get('/search', restaurantController.getRestaurantByTerm);
 router.get("/random", restaurantController.getRandomRestaurants);
+// router.get('/filtered', restaurantController.getFilteredRestaurants);
+router.get('/filtered-search', restaurantController.searchAndFilterRestaurants);
 
 module.exports = router;

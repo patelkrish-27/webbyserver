@@ -1,4 +1,5 @@
 const RestaurantModel = require('../models/restaurant.model');
+const axios = require("axios");
 const uploadService = require('../services/upload.service');
 const path = require('path');
 const fs = require('fs');
@@ -102,7 +103,76 @@ class RestaurantController {
           res.status(500).json({ error: error.message });
         }
       }
-}
+
+    
+    async searchAndFilterRestaurants(req, res) {
+        try {
+          const { term, sort, ratings, cuisines } = req.query;
+    
+          if (!term || term.trim() === "") {
+            return res.status(400).json({ error: "Search term is required" });
+          }
+    
+          // ✅ Step 1: Fetch restaurants from search API
+          const searchResponse = await axios.get(
+            `http://localhost:3000/api/restaurants/search?term=${term}`
+          );
+          let restaurants = searchResponse.data.results;
+    
+          // ✅ Step 2: Fetch additional restaurant details asynchronously
+          const restaurantDetailsPromises = restaurants.map((restaurant) =>
+            axios
+              .get(`http://localhost:3000/api/restaurants/getOne/${restaurant._id}`)
+              .then((response) => ({
+                _id: restaurant._id,
+                restaurantName: response.data.restaurantName,
+                rating: response.data.rating,
+                location: response.data.location,
+                cuisine: response.data.cuisine,
+                image: response.data.image,
+              }))
+              .catch(() => ({
+                _id: restaurant._id,
+                restaurantName: restaurant.restaurantName,
+                error: "Failed to fetch restaurant details",
+              }))
+          );
+    
+          let enrichedRestaurants = await Promise.all(restaurantDetailsPromises);
+    
+          // ✅ Step 3: Apply filters
+          if (cuisines) {
+            const cuisineArray = cuisines.split(",").map((c) => c.trim().toLowerCase());
+            enrichedRestaurants = enrichedRestaurants.filter((r) =>
+              r.cuisine && cuisineArray.some(cuisine => r.cuisine.toLowerCase().includes(cuisine))
+            );
+          }
+    
+          if (ratings) {
+            const numericRating = parseFloat(ratings);
+            if (!isNaN(numericRating)) {
+              enrichedRestaurants = enrichedRestaurants.filter((r) =>
+                (numericRating === 3.5 && r.rating >= 3.5) ||
+                (numericRating === 4 && r.rating >= 4) ||
+                (numericRating === 4.5 && r.rating >= 4.5)
+              );
+            }
+          }
+    
+          // ✅ Step 4: Sorting
+          if (sort === "popularity") {
+            enrichedRestaurants.sort((a, b) => b.rating - a.rating);
+          }
+    
+          res.status(200).json({
+            results: enrichedRestaurants,
+          });
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      }
+    }
+
 
 module.exports = new RestaurantController();
 

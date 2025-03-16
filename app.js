@@ -31,5 +31,5 @@ app.use('/api/menu', menuRoutes);
 connectMongoDb();
 
 app.listen(PORT, () => {
-    console.log(Server running on port ${PORT});
+    console.log(`Server running on port ${PORT}`);
 });

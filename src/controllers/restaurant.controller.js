@@ -158,11 +158,10 @@ async toggleFavoriteRestaurant(req, res) {
     
           res.status(200).json({ results: randomRestaurants });
         } catch (error) {
-          res.status(500).json({ error: error.message });
-        }
-      }
+          res.status(500).json({ error: error.message });
+        }
+    }
 
-    
     async searchAndFilterRestaurants(req, res) {
         try {
           const { term, sort, ratings, cuisines } = req.query;
@@ -228,9 +227,148 @@ async toggleFavoriteRestaurant(req, res) {
         } catch (error) {
           res.status(500).json({ error: error.message });
         }
+    }
+    async getRandomPromotedRestaurants(req, res) {
+      try {
+          const { count } = req.query;
+          const numberOfRestaurants = count ? Math.min(parseInt(count), 5) : 5; // Default to 5 if count is not provided
+  
+          // Fetch all promoted restaurants
+          let promotedRestaurants = await RestaurantModel.find({ promoted: true });
+  
+          // Check if there are any promoted restaurants
+          if (promotedRestaurants.length === 0) {
+              return res.status(404).json({ error: "No promoted restaurants found" });
+          }
+  
+          // Shuffle the array to get random restaurants
+          const shuffledRestaurants = promotedRestaurants.sort(() => 0.5 - Math.random());
+  
+          // Select the specified number of random restaurants
+          const randomRestaurants = shuffledRestaurants.slice(0, numberOfRestaurants);
+  
+          // Map to return only the name and first image
+          const result = randomRestaurants
+          // .map(restaurant => ({
+          //     name: restaurant.restaurantName,
+          //     image: restaurant.image[0] // Get the first image
+          // }));
+  
+          res.status(200).json({ results: result });
+      } catch (error) {
+          res.status(500).json({ error: error.message });
       }
     }
+    // async filterAndRandomRestaurants(req, res) {
+    //     try {
+    //         const { minRating, isVeg, count, sort } = req.query;
 
+    //         // Fetch all restaurants
+    //         let restaurants = await RestaurantModel.find({});
+
+    //         // Filter by minimum rating
+    //         if (minRating) {
+    //             const numericRating = parseFloat(minRating);
+    //             if (!isNaN(numericRating)) {
+    //                 restaurants = restaurants.filter(r => parseFloat(r.rating) >= numericRating);
+    //             }
+    //         }
+
+    //         // Filter for vegetarian restaurants based on pureVeg field
+    //         if (isVeg === 'true') {
+    //             restaurants = restaurants.filter(r => r.pureVeg); // Check the pureVeg field
+    //         }
+
+    //         // Log ratings before sorting
+    //         console.log("Before sorting:", restaurants.map(r => ({ name: r.restaurantName, rating: r.rating })));
+
+    //         // Sort by ratings if the sort parameter is provided
+    //         if (sort === 'asc') {
+    //             restaurants.sort((a, b) => parseFloat(a.rating) - parseFloat(b.rating));
+    //         } else if (sort === 'desc') {
+    //             restaurants.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+    //         }
+
+    //         // Log sorted ratings
+    //         console.log("After sorting:", restaurants.map(r => ({ name: r.restaurantName, rating: r.rating })));
+
+    //         // Select a random number of restaurants from the sorted list
+    //         if (restaurants.length === 0) {
+    //             return res.status(404).json({ error: "No restaurants found matching the criteria" });
+    //         }
+
+    //         // Determine the number of random restaurants to return
+    //         const numberOfRestaurants = count ? Math.min(parseInt(count), restaurants.length) : 1;
+    //         const randomRestaurants = [];
+    //         const usedIndices = new Set();
+
+    //         while (randomRestaurants.length < numberOfRestaurants) {
+    //             const randomIndex = Math.floor(Math.random() * restaurants.length);
+    //             if (!usedIndices.has(randomIndex)) {
+    //                 randomRestaurants.push(restaurants[randomIndex]);
+    //                 usedIndices.add(randomIndex);
+    //             }
+    //         }
+
+    //         // Return the random restaurants, which are selected from the sorted list
+    //         res.status(200).json({ results: randomRestaurants });
+    //     } catch (error) {
+    //         res.status(500).json({ error: error.message });
+    //     }
+    // }
+
+    async filterAndRandomRestaurants(req, res) {
+      try {
+          const { minRating, isVeg, count, sort } = req.query;
+
+          // Fetch all restaurants
+          let restaurants = await RestaurantModel.find({});
+
+          // Filter by minimum rating
+          if (minRating) {
+              const numericRating = parseFloat(minRating);
+              if (!isNaN(numericRating)) {
+                  restaurants = restaurants.filter(r => parseFloat(r.rating) >= numericRating);
+              }
+          }
+
+          // Filter for vegetarian restaurants based on pureVeg field
+          if (String(isVeg).toLowerCase() === 'true') {
+              restaurants = restaurants.filter(r => r.pureVeg);
+          }
+
+          // Ensure we have enough restaurants to choose from
+          if (restaurants.length === 0) {
+              return res.status(404).json({ error: "No restaurants found matching the criteria" });
+          }
+
+          // Determine the number of random restaurants to pick
+          const numberOfRestaurants = count ? Math.min(parseInt(count), restaurants.length) : 1;
+          const randomRestaurants = [];
+          const usedIndices = new Set();
+
+          while (randomRestaurants.length < numberOfRestaurants) {
+              const randomIndex = Math.floor(Math.random() * restaurants.length);
+              if (!usedIndices.has(randomIndex)) {
+                  randomRestaurants.push(restaurants[randomIndex]);
+                  usedIndices.add(randomIndex);
+              }
+          }
+
+          // Sort the randomly selected restaurants
+          randomRestaurants.sort((a, b) => {
+              const ratingA = parseFloat(a.rating) || 0; // Default to 0 if rating is missing
+              const ratingB = parseFloat(b.rating) || 0;
+              return sort === 'asc' ? ratingA - ratingB : ratingB - ratingA;
+          });
+
+          // Return the sorted random restaurants
+          res.status(200).json({ results: randomRestaurants });
+      } catch (error) {
+          res.status(500).json({ error: error.message });
+      }
+  }
+}
 
 module.exports = new RestaurantController();
 

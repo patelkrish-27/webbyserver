@@ -41,6 +41,7 @@ const restroSchema = new mongoose.Schema({
   rating: { type: String},
   description: { type: String, required: true },
     promoted: { type: Boolean, default: false },
+    pureVeg:{type:Boolean,default:true}
 });
 
 const RestaurantModel = mongoose.model("RestaurantData", restroSchema);

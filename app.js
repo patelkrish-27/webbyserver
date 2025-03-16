@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
 require('dotenv').config();
 
 const { connectMongoDb } = require('./src/config/database');
@@ -30,5 +31,5 @@ app.use('/api/menu', menuRoutes);
 connectMongoDb();
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(Server running on port ${PORT});
 });

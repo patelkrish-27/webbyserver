@@ -9,4 +9,6 @@ router.get("/login", userController.loginUser);
 router.get("/loginbyemail", userController.loginUserByEmail);
 router.post("/send-otp", authController.sendOtp);
 router.post("/getuser",userController.getUser);
+router.put("/update", userController.updateUser);
+router.delete("/delete", userController.deleteUser);
 module.exports = router;

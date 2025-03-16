@@ -125,6 +125,42 @@ async toggleFavoriteRestaurant(req, res) {
       res.status(201).json({ status: true, message: "User found",user });
     }
   }
+
+  async updateUser(req, res) {
+    try {
+      const { userId, name, address, phoneNumber, photoUrl } = req.body;
+
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        userId,
+        { name, address, phoneNumber, photoUrl },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ status: false, message: "User not found" });
+      }
+
+      res.status(200).json({ status: true, message: "User updated successfully", user: updatedUser });
+    } catch (error) {
+      res.status(500).json({ status: false, error: error.message });
+    }
+  }
+
+  // **DELETE USER**
+  async deleteUser(req, res) {
+    try {
+      const { userId } = req.body;
+      const deletedUser = await UserModel.findByIdAndDelete(userId);
+
+      if (!deletedUser) {
+        return res.status(404).json({ status: false, message: "User not found" });
+      }
+
+      res.status(200).json({ status: true, message: "User deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ status: false, error: error.message });
+    }
+  }
 }
 
 module.exports = new UserController();

@@ -3,7 +3,65 @@ const axios = require("axios");
 const uploadService = require('../services/upload.service');
 const path = require('path');
 const fs = require('fs');
+const UserModel = require('../models/user.model');
+
 class RestaurantController {
+  async fetchAllFavoriteRestaurant(req, res) {
+    try {
+      
+      // Fetch user and populate favoriteRestaurants
+      const user = await UserModel.findById(req.body.userId).populate('favoriteRestraunts');
+      console.log("populated user:"+user);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        console.log(user.favoriteRestraunts);
+        res.status(200).json({ favoriteRestaurants: user.favoriteRestraunts });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
+async toggleFavoriteRestaurant(req, res) {
+    try {
+        console.log(req.body);
+        const user = await UserModel.findById(req.body.userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Ensure correct field name
+        if (!user.favoriteRestraunts) {
+            user.favoriteRestraunts = [];
+        }
+
+        const index = user.favoriteRestraunts.indexOf(req.body.restaurantId);
+        console.log("Index:", index);
+        console.log("User before update:", user);
+
+        if (index === -1) {
+            // Add restaurant if not in the list
+            user.favoriteRestraunts.push(req.body.restaurantId);
+        } else {
+            // Remove restaurant if already in the list
+            user.favoriteRestraunts.splice(index, 1);
+        }
+
+        await user.save();
+        console.log("User after update:", user);
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error("Error toggling favorite restaurant:", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
     async getAllRestaurants(req, res) {
         const page = req.params.pages;
         try {

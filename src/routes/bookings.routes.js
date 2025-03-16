@@ -11,6 +11,7 @@ router.get('/bookings', bookingController.getAllBookings);
 // Get booking by ID
 router.get('/bookings/:id', bookingController.getBookingById);
 
+router.get('/userbookings/:id', bookingController.fetchUserBookings);
 // Update booking
 router.put('/bookings/:id', bookingController.updateBooking);
 

@@ -13,5 +13,7 @@ router.get('/search', restaurantController.getRestaurantByTerm);
 router.get("/random", restaurantController.getRandomRestaurants);
 // router.get('/filtered', restaurantController.getFilteredRestaurants);
 router.get('/filtered-search', restaurantController.searchAndFilterRestaurants);
+router.post("/toggleFavorite", restaurantController.toggleFavoriteRestaurant);
+router.post("/fetchAllFavorite", restaurantController.fetchAllFavoriteRestaurant);
 
 module.exports = router;

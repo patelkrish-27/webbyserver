@@ -2,6 +2,52 @@ const UserModel = require("../models/user.model");
 const authController = require("./auth.controller");
 const AuthModel = require("../models/auth.model");
 class UserController {
+  
+async fetchAllFavoriteRestaurant (req,res) {
+  try {
+      const favoriteRestaurants = await UserModel.findById(req.body.userId)
+      console.log(favoriteRestaurants.favoriteRestraunts)
+      res.status(200).json({favoriteRestaurants:favoriteRestaurants.favoriteRestraunts});
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+}
+
+async toggleFavoriteRestaurant(req, res) {
+  try {
+      console.log(req.body);
+      const user = await UserModel.findById(req.body.userId);
+
+      if (!user) {
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Ensure correct field name
+      if (!user.favoriteRestraunts) {
+          user.favoriteRestraunts = [];
+      }
+
+      const index = user.favoriteRestraunts.indexOf(req.body.restaurantId);
+      console.log("Index:", index);
+      console.log("User before update:", user);
+
+      if (index === -1) {
+          // Add restaurant if not in the list
+          user.favoriteRestraunts.push(req.body.restaurantId);
+      } else {
+          // Remove restaurant if already in the list
+          user.favoriteRestraunts.splice(index, 1);
+      }
+
+      await user.save();
+      console.log("User after update:", user);
+
+      return res.status(200).json(user);
+  } catch (error) {
+      console.error("Error toggling favorite restaurant:", error);
+      res.status(500).json({ error: error.message });
+  }
+}
   async registerUser(req, res) {
     const user = req.body;
     console.log("checkUser",user);

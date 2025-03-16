@@ -65,3 +65,16 @@ exports.getPopulated = async (req, res) => {
         res.status(500).json({ message: "Error fetching bookings", error: error.message });
     }
 };
+
+
+
+exports.fetchUserBookings = async (req, res) => {
+    try {
+        console.log("called bhai")
+        const booking = await BookingsModel.find({userID:req.params.id});
+        if (!booking) return res.status(404).json({ message: "Booking not found" });
+        res.status(200).json(booking);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching booking", error: error.message });
+    }
+  };

@@ -118,7 +118,8 @@ async toggleFavoriteRestaurant(req, res) {
 
   async getUser(req, res) {
     const { _id } = req.body;
-    const user = await UserModel.findOne({ _id });
+    console.log("user id:"+_id)
+    const user = await UserModel.findOne({_id});
     if (!user) {
       res.send({ status: false, message: "User not found" });
     } else {

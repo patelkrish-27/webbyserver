@@ -71,7 +71,7 @@ exports.getPopulated = async (req, res) => {
 
 exports.fetchUserBookings = async (req, res) => {
     try {
-        console.log("called bhai")
+        console.log("called bhai",req.params.id)
         const booking = await BookingsModel.find({userId:req.params.id}).populate("restaurantId");
         if (!booking) return res.status(404).json({ message: "Booking not found" });
         res.status(200).json(booking);

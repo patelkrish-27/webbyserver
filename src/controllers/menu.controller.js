@@ -52,54 +52,6 @@ class MenuController {
   }
 
   // Get menu items by category
-  // async getMenuByCategory(req, res) {
-  //   try {
-  //     const { category } = req.params;
-      
-  //     if (!category) {
-  //       return res.status(400).json({ error: "Category is required" });
-  //     }
-      
-  //     // Find all restaurants that have menu items in the given category
-  //     const menus = await MenuModel.find({ "menu.category": category });
-      
-  //     if (!menus.length) {
-  //       return res
-  //         .status(404)
-  //         .json({ error: "No menu items found in this category" });
-  //     }
-      
-  //     // Fetch restaurant details for each restaurant_id
-  //     const restaurantDetailsPromises = menus.map((menu) => {
-  //       // Convert ObjectId to string for the API call
-  //       const restaurantIdString = menu.restaurant_id.toString();
-        
-  //       return axios
-  //         .get(
-  //           `http://localhost:3000/api/restaurants/getOne/${restaurantIdString}`
-  //         )
-  //         .then((response) => ({
-  //           restaurant_id: menu.restaurant_id,
-  //           restaurant_name: response.data.restaurantName,
-  //           restaurant_rating: response.data.rating,
-  //           restaurant_address: response.data.location.city + " ," + response.data.location.area,
-  //           menu_items: menu.menu.filter((item) => item.category === category),
-  //         }))
-  //         .catch((error) => ({
-  //           restaurant_id: menu.restaurant_id,
-  //           error: "Failed to fetch restaurant details",
-  //           menu_items: menu.menu.filter((item) => item.category === category),
-  //         }));
-  //     });
-      
-  //     // Resolve all promises and send the response
-  //     const results = await Promise.all(restaurantDetailsPromises);
-  //     res.status(200).json(results);
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // }
-
   async getMenuByCategory(req, res) {
     try {
       const { category } = req.params;
@@ -108,8 +60,8 @@ class MenuController {
         return res.status(400).json({ error: "Category is required" });
       }
       
-      // Find all restaurants that have menu items in the given category and populate restaurant details
-      const menus = await MenuModel.find({ "menu.category": category }).populate("restaurant_id");
+      // Find all restaurants that have menu items in the given category
+      const menus = await MenuModel.find({ "menu.category": category });
       
       if (!menus.length) {
         return res
@@ -117,23 +69,71 @@ class MenuController {
           .json({ error: "No menu items found in this category" });
       }
       
-      // Map the results directly without additional API calls
-      let results = menus.map((menu) => ({
-        restaurant_id: menu.restaurant_id._id,
-        restaurant_name: menu.restaurant_id.restaurantName,
-        restaurant_rating: menu.restaurant_id.rating,
-        restaurant_address: menu.restaurant_id.location.city + " ," + menu.restaurant_id.location.area,
-        menu_items: menu.menu.filter((item) => item.category === category),
-      }));
+      // Fetch restaurant details for each restaurant_id
+      const restaurantDetailsPromises = menus.map((menu) => {
+        // Convert ObjectId to string for the API call
+        const restaurantIdString = menu.restaurant_id.toString();
+        
+        return axios
+          .get(
+            `http://localhost:3000/api/restaurants/getOne/${restaurantIdString}`
+          )
+          .then((response) => ({
+            restaurant_id: menu.restaurant_id,
+            restaurant_name: response.data.restaurantName,
+            restaurant_rating: response.data.rating,
+            restaurant_address: response.data.location.city + " ," + response.data.location.area,
+            menu_items: menu.menu.filter((item) => item.category === category),
+          }))
+          .catch((error) => ({
+            restaurant_id: menu.restaurant_id,
+            error: "Failed to fetch restaurant details",
+            menu_items: menu.menu.filter((item) => item.category === category),
+          }));
+      });
       
-      // Shuffle the results randomly
-      results = results.sort(() => Math.random() - 0.5);
-      
+      // Resolve all promises and send the response
+      const results = await Promise.all(restaurantDetailsPromises);
       res.status(200).json(results);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   }
+
+  // async getMenuByCategory(req, res) {
+  //   try {
+  //     const { category } = req.params;
+      
+  //     if (!category) {
+  //       return res.status(400).json({ error: "Category is required" });
+  //     }
+      
+  //     // Find all restaurants that have menu items in the given category and populate restaurant details
+  //     const menus = await MenuModel.find({ "menu.category": category }).populate("restaurant_id");
+      
+  //     if (!menus.length) {
+  //       return res
+  //         .status(404)
+  //         .json({ error: "No menu items found in this category" });
+  //     }
+      
+  //     // Map the results directly without additional API calls
+  //     let results = menus.map((menu) => ({
+  //       restaurant_id: menu.restaurant_id._id,
+  //       restaurant_name: menu.restaurant_id.restaurantName,
+  //       restaurant_rating: menu.restaurant_id.rating,
+  //       restaurant_address: menu.restaurant_id.location.city + " ," + menu.restaurant_id.location.area,
+  //       menu_items: menu.menu.filter((item) => item.category === category),
+  //     }));
+      
+  //     // Shuffle the results randomly
+  //     results = results.sort(() => Math.random() - 0.5);
+      
+  //     res.status(200).json(results);
+  //   } catch (error) {
+  //     res.status(500).json({ error: error.message });
+  //   }
+  // }
 }
 
 module.exports = new MenuController();
